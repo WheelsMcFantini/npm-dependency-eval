@@ -1,5 +1,5 @@
 const https = require('https');
-//let packageName = ""
+const fetch = require('node-fetch')
 const VERSION = ""
 const REGISTRY_API = "registry.npmjs.org"
 
@@ -9,10 +9,35 @@ const REGISTRY_API = "registry.npmjs.org"
 //populate each value with the same package > dependency
 //visualize?
 
+function extractLatestVersion(packageInfo){
+  console.log(`[dependency-eval] Recieved: ${packageInfo}`)
+  const { version } = packageInfo
+  console.log(`[dependency-eval] Extracted: ${version}`)
+  console.log(version)
+}
+
+
+function fetchLatestPackageInfo(packageName, callback) {
+  var object
+  const url = `https://${REGISTRY_API}/${packageName}/latest`
+  console.log(`[dependency-eval] Fetching url: ${url}`)
+  fetch(url)
+      .then(res => res.json())//fetch returns a response object, this is assigned to 'res' to the left of the arrow. 
+      //to the right of the arrow is an anonymous function that takes the left side of the arrow as input
+      .then(data => object = data)//this one takes the return value of res.json() as data and attempts to assign it;s value to object
+      .then(() => callback(object))//
+}
+
+//callback function for ensuring the package exists/I connected properly?
+
 async function getDependencyList(options) {
-  const { packageName, packageVersion } = options;
-  console.log(`packagane NAme:  ${packageName}`);
-  console.log(`packagane Version:  ${packageVersion}`);
+  const { packageName, packageVersion } = options
+  console.log(`[dependency-eval] package Name:  ${packageName}`)
+  console.log(`[dependency-eval] package Version:  ${packageVersion}`)
+
+  const url = `https://${REGISTRY_API}/${packageName}/${packageVersion}`
+  console.log(url)
+  //fetch(url)
   return;
 
   // const options = {
@@ -84,4 +109,6 @@ function convertToTree() {
   console.log('[convertToTree] lol converting to tree');
 }
 
-module.exports = { getDependencyList, convertToTree};
+
+
+module.exports = { extractLatestVersion, fetchLatestPackageInfo, getDependencyList, convertToTree};

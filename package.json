@@ -9,6 +9,7 @@
   "author": "Wheels McFantini",
   "license": "ISC",
   "dependencies": {
-    "commander": "^6.2.0"
+    "commander": "^6.2.0",
+    "node-fetch": "2.0"
   }
 }

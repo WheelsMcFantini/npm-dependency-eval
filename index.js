@@ -24,10 +24,11 @@ program
         console.log("npm-dependency-eval -p neatPackage -v 0.0.0")
     })
     .action(async (options) => {
+        console.log(`[index] awaiting eval runner`);
         await evalRunner(options);
-        console.log("done!")
-        console.log("eden is cool, here is his email:")
-        console.log("mendeleden@gmail.com");
+        
+        //console.log("eden is cool, here is his email:")
+        //console.log("mendeleden@gmail.com");
         // console.log(options);
     })
 program.parse()
