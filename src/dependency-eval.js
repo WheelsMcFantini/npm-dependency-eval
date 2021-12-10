@@ -32,8 +32,20 @@ async function getDependencyList(packageData) {
   return parsedData.dependencies
 }
 
+async function getDependenciesOfDependencies(dependencies) {
+  depsOfDeps = {}
+    for (const dependency in dependencies) {
+        console.log(`[dependency-eval] grabbing dependencies for ${dependency}:${dependencies[dependency]}`)
+        depKey = `${dependency}:${dependencies[dependency]}`
+        const name = dependency
+        const version = dependencies[dependency]
+        depsOfDeps[depKey] = await getDependencyList({ name, version})
+      }
+  return depsOfDeps
+}
+
 function convertToTree() {
   console.log('[convertToTree] lol converting to tree')
 }
 
-module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, convertToTree}
+module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, getDependenciesOfDependencies, convertToTree}

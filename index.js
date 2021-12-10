@@ -12,8 +12,9 @@ Once that code runs, I can pull the given arguments from it and run my program.
 */
 program
     .requiredOption('-p, --packageName <name>', 'package to evaulate the dependencies of')
+    .option('-d, --depth <max_depth_level>', 'depth of the dependency tree')
     .option('-v, --packageVersion [version]',  "package version")
-    .option('-d, --debug', 'enables verbose output')
+    .option('--debug', 'enables verbose output')
     .on('--help', function(){
         console.log("")
         console.log("This command displays the npm dependencies of a given package, version optional")
