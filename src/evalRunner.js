@@ -30,29 +30,6 @@ async function evalRunner(options) {
 
     const deps = await getDependencyList(requestedPackageInfo);
     console.log(deps)
-    /**
-     * Iterating over arrays
-     */
-    // 1
-    // for(user of users) {
-    //     console.log(`Got user with id: ${user.id}, name: ${user.name}`);
-    // }
-
-    // users.forEach(user => {
-    //     console.log(`Got user with id: ${user.id}, name: ${user.name}`);
-    // });
-
-    // users.map(user => {
-    //     console.log(`Got user with id: ${user.id}, name: ${user.name}`);
-    // });
-
-
-    //convertToTree();
-    /**
-     * Some Logic!
-     */
-    // Run in some fashion to get some result getDependencyList
-    // Logic!
 
     return;
 }
