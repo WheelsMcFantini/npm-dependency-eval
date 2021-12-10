@@ -1,5 +1,5 @@
-const { version } = require('commander');
-const https = require('https');
+const { version } = require('commander')
+const https = require('https')
 const fetch = require('node-fetch')
 const VERSION = ""
 const REGISTRY_API = "registry.npmjs.org"
@@ -7,14 +7,14 @@ const REGISTRY_API = "registry.npmjs.org"
 async function fetchPackageInfo(packageName, packageVersion) {
   const url = `https://${REGISTRY_API}/${packageName}/${packageVersion}`
   console.log(`[dependency-eval] Fetching url: ${url}`)
-  const data = await fetch(url);
-  const parsedData = await data.json();
-  return parsedData;
+  const data = await fetch(url)
+  const parsedData = await data.json()
+  return parsedData
 }
 
 async function getLatestPackageVersion(packageName) {
-  const packageInfo = await fetchPackageInfo(packageName, 'latest');
-  return packageInfo.version;
+  const packageInfo = await fetchPackageInfo(packageName, 'latest')
+  return packageInfo.version
 }
 
 
@@ -33,7 +33,7 @@ async function getDependencyList(packageData) {
 }
 
 function convertToTree() {
-  console.log('[convertToTree] lol converting to tree');
+  console.log('[convertToTree] lol converting to tree')
 }
 
-module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, convertToTree};
+module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, convertToTree}

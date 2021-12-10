@@ -24,30 +24,7 @@ program
         console.log("npm-dependency-eval -p neatPackage -v 0.0.0")
     })
     .action(async (options) => {
-        console.log(`[index] awaiting eval runner`);
-        await evalRunner(options);
-        
-        //console.log("eden is cool, here is his email:")
-        //console.log("mendeleden@gmail.com");
-        // console.log(options);
+        console.log(`[index] awaiting eval runner`)
+        await evalRunner(options)
     })
 program.parse()
-
-//const options = program.opts()
-
-/* //console.log(options)
-//console.log(options["package"])
-
-var results  = getDependencyList(options["package"])
-console.log("results:")
-console.log(results)
-console.log("")
-console.log(eval.getDependencyList(options["package"]))
-/*if (results[0] != undefined) {
-      console.log("Dependencies:")
-      console.log(results[0])
-    }
-if (results[1] != undefined) {
-      console.log("Dev Dependencies:")
-      console.log(results[1])
-    }*/ 

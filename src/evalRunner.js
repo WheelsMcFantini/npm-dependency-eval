@@ -1,16 +1,16 @@
 //importing commander
-const { option } = require('commander');
+const { option } = require('commander')
 //importing the fucntions I exported with module.exports
 const { getLatestPackageVersion, 
     getDependencyList, 
-    fetchPackageInfo } = require('./dependency-eval');
-const chalk = require('chalk');
+    fetchPackageInfo } = require('./dependency-eval')
+const chalk = require('chalk')
 
 async function evalRunner(options) {
-    const { packageName } = options;
-    let { packageVersion} = options;
+    const { packageName } = options
+    let { packageVersion} = options
 
-    console.log(`[evalRunner] package Name:  ${packageName}`);
+    console.log(`[evalRunner] package Name:  ${packageName}`)
     //alternate if statement:
     // if packageVersion exists, assign it;s value to itsself. 
     // packageVersion = packageVersion ? packageVersion : await getLatestPackageVersion(packageName);
@@ -19,7 +19,7 @@ async function evalRunner(options) {
     if (packageVersion == undefined) {
         console.log(`${chalk.red("[evalRunner]")} packageVersion was undefined`)
         console.log(`${chalk.red("[evalRunner]")} Retrieving latest package version`)
-        packageVersion = await getLatestPackageVersion(packageName);
+        packageVersion = await getLatestPackageVersion(packageName)
         console.log(`${chalk.green("[evalRunner]")} ${packageName} latest version is ${packageVersion}`)
     } else {
         console.log("[evalRunner] packageVersion was defined")
@@ -31,7 +31,7 @@ async function evalRunner(options) {
     console.log(`[dependency-eval] ${requestedPackageInfo.name}`)
     console.log(`[dependency-eval] ${requestedPackageInfo.version}`)
 
-    const dependencies = await getDependencyList(requestedPackageInfo);
+    const dependencies = await getDependencyList(requestedPackageInfo)
 
     //output the dependencies programatically, eventually look up each one
     //dependency is an object like {'coolPackage/neat-feature': 4.2.0, etc}
@@ -39,10 +39,10 @@ async function evalRunner(options) {
     for (const dependency in dependencies) {
         console.log(`[dependency-eval] grabbing dependencies for ${dependency}:${dependencies[dependency]}`)
         depKey = `${dependency}:${dependencies[dependency]}`
-        bigDeps[depKey] = await getDependencyList(requestedPackageInfo);
+        bigDeps[depKey] = await getDependencyList(requestedPackageInfo)
       }
     console.log(bigDeps)
-    return;
+    return
 }
 
-module.exports = { evalRunner} ;
+module.exports = { evalRunner} 
