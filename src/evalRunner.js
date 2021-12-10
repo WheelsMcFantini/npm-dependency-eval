@@ -1,9 +1,11 @@
+//importing commander
 const { option } = require('commander');
+//importing the fucntions I exported with module.exports
 const { getLatestPackageVersion, 
     getDependencyList, 
-    convertToTree,
     fetchPackageInfo } = require('./dependency-eval');
 const chalk = require('chalk');
+
 async function evalRunner(options) {
     const { packageName } = options;
     let { packageVersion} = options;
@@ -13,6 +15,7 @@ async function evalRunner(options) {
     // if packageVersion exists, assign it;s value to itsself. 
     // packageVersion = packageVersion ? packageVersion : await getLatestPackageVersion(packageName);
     
+    //logic to ensure we can feed a package name and version to getDependencyList
     if (packageVersion == undefined) {
         console.log(`${chalk.red("[evalRunner]")} packageVersion was undefined`)
         console.log(`${chalk.red("[evalRunner]")} Retrieving latest package version`)
@@ -22,15 +25,23 @@ async function evalRunner(options) {
         console.log("[evalRunner] packageVersion was defined")
         console.log(`[evalRunner] packageVersion: ${packageVersion}`)
     }
-    console.log(`${chalk.green("[evalRunner]")} retrieved package Version:  ${packageVersion}`);
+    //console.log(`${chalk.green("[evalRunner]")} retrieved package Version:  ${packageVersion}`);
     
     const requestedPackageInfo = await fetchPackageInfo(packageName, packageVersion);
     console.log(`[dependency-eval] ${requestedPackageInfo.name}`)
     console.log(`[dependency-eval] ${requestedPackageInfo.version}`)
 
-    const deps = await getDependencyList(requestedPackageInfo);
-    console.log(deps)
+    const dependencies = await getDependencyList(requestedPackageInfo);
 
+    //output the dependencies programatically, eventually look up each one
+    //dependency is an object like {'coolPackage/neat-feature': 4.2.0, etc}
+    bigDeps = {}
+    for (const dependency in dependencies) {
+        console.log(`[dependency-eval] grabbing dependencies for ${dependency}:${dependencies[dependency]}`)
+        depKey = `${dependency}:${dependencies[dependency]}`
+        bigDeps[depKey] = await getDependencyList(requestedPackageInfo);
+      }
+    console.log(bigDeps)
     return;
 }
 
