@@ -1,3 +1,4 @@
+const { version } = require('commander');
 const https = require('https');
 const fetch = require('node-fetch')
 const VERSION = ""
@@ -9,43 +10,41 @@ const REGISTRY_API = "registry.npmjs.org"
 //populate each value with the same package > dependency
 //visualize?
 
-function extractLatestVersion(packageInfo){
-  console.log(`[dependency-eval] Recieved: ${packageInfo}`)
-  const { version } = packageInfo
-  console.log(`[dependency-eval] Extracted: ${version}`)
-  console.log(version)
-}
+// function extractLatestVersion(packageInfo){
+//   console.log(`[dependency-eval] Recieved: ${packageInfo}`)
+//   const { version } = packageInfo
+//   console.log(`[dependency-eval] Extracted: ${version}`)
+//   return version
+// }
 
-
-function fetchLatestPackageInfo(packageName, callback) {
-  var object
-  const url = `https://${REGISTRY_API}/${packageName}/latest`
-  console.log(`[dependency-eval] Fetching url: ${url}`)
-  fetch(url)
-      .then(res => res.json())//fetch returns a response object, this is assigned to 'res' to the left of the arrow. 
-      //to the right of the arrow is an anonymous function that takes the left side of the arrow as input
-      .then(data => object = data)//this one takes the return value of res.json() as data and attempts to assign it;s value to object
-      .then(() => callback(object))//
-}
-
-//callback function for ensuring the package exists/I connected properly?
-
-async function getDependencyList(options) {
-  const { packageName, packageVersion } = options
-  console.log(`[dependency-eval] package Name:  ${packageName}`)
-  console.log(`[dependency-eval] package Version:  ${packageVersion}`)
-
+async function fetchPackageInfo(packageName, packageVersion) {
   const url = `https://${REGISTRY_API}/${packageName}/${packageVersion}`
-  console.log(url)
-  //fetch(url)
-  return;
+  console.log(`[dependency-eval] Fetching url: ${url}`)
+  const data = await fetch(url);
+  const parsedData = await data.json();
+  return parsedData;
+}
 
-  // const options = {
-  // hostname: REGISTRY_API,
-  // port: 443,
-  // path: '/' + packageName + '/latest',
-  // method: 'GET'
-  // }
+async function getLatestPackageVersion(packageName) {
+  const packageInfo = await fetchPackageInfo(packageName, 'latest');
+  return packageInfo.version;
+}
+
+
+async function getDependencyList(packageData) {
+  //const { name, version } = packageData
+  console.log(`[dependency-eval] package Name:  ${packageData.name}`)
+  console.log(`[dependency-eval] package Version:  ${packageData.version}`)
+
+  const url = `https://${REGISTRY_API}/${packageData.name}/${packageData.version}`
+  console.log(`[dependency-eval] URL: ${url}`)
+  
+  const data = await fetch(url)
+  const parsedData = await data.json()
+  console.log(`[dependency-eval] Got dependencies for ${packageData.name}: ${packageData.version}`)
+  return parsedData.dependencies
+
+ 
   //runs an http get and then creates an anonymous arrow function that happens for get
   https.get(options, res => {
     let data = [];
@@ -111,4 +110,4 @@ function convertToTree() {
 
 
 
-module.exports = { extractLatestVersion, fetchLatestPackageInfo, getDependencyList, convertToTree};
+module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, convertToTree};

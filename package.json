@@ -9,7 +9,8 @@
   "author": "Wheels McFantini",
   "license": "ISC",
   "dependencies": {
+    "chalk": "3.0.0",
     "commander": "^6.2.0",
-    "node-fetch": "2.0"
+    "node-fetch": "2.6.1"
   }
 }
