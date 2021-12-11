@@ -8,6 +8,7 @@ const { getLatestPackageVersion,
 const chalk = require('chalk')
 
 async function evalRunner(options) {
+    console.time("evalrunner")
     const { packageName, depth } = options
     let { packageVersion } = options
 
@@ -51,6 +52,7 @@ async function evalRunner(options) {
         console.log(`[evalRunner] Dependencies for ${packageName}:${packageVersion}:`)
         console.log(` ${JSON.stringify(dependencies, null, 2)}`)
     }
+    console.timeEnd("evalrunner")
     return
 }
 

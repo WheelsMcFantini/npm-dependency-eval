@@ -20,15 +20,15 @@ async function getLatestPackageVersion(packageName) {
 
 async function getDependencyList(packageData) {
   //const { name, version } = packageData
-  console.log(`[dependency-eval] package Name:  ${packageData.name}`)
-  console.log(`[dependency-eval] package Version:  ${packageData.version}`)
+  //console.log(`[dependency-eval] package Name:  ${packageData.name}`)
+  //console.log(`[dependency-eval] package Version:  ${packageData.version}`)
 
   const url = `https://${REGISTRY_API}/${packageData.name}/${packageData.version}`
   console.log(`[dependency-eval] URL: ${url}`)
   
   const data = await fetch(url)
   const parsedData = await data.json()
-  console.log(`[dependency-eval] Got dependencies for ${packageData.name}: ${packageData.version}`)
+  //console.log(`[dependency-eval] Got dependencies for ${packageData.name}: ${packageData.version}`)
   return parsedData.dependencies
 }
 
