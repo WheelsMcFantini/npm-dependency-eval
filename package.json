@@ -2,8 +2,9 @@
   "name": "npm-dependency-eval",
   "version": "0.1.0",
   "description": "CLI tool to help you see what dependencies a given package requires",
-  "main": "index.js",
+  "main": "node cli.js",
   "scripts": {
+    "dep-eval": "node cli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Wheels McFantini",
