@@ -19,17 +19,38 @@ async function getLatestPackageVersion(packageName) {
 
 
 async function getDependencyList(packageData) {
-  //const { name, version } = packageData
+  let { name, version } = packageData
   //console.log(`[dependency-eval] package Name:  ${packageData.name}`)
   //console.log(`[dependency-eval] package Version:  ${packageData.version}`)
 
-  const url = `https://${REGISTRY_API}/${packageData.name}/${packageData.version}`
+  //if the first character of version is '^' 
+  //?
+  //then version = version.split('^')[1]
+  //: else
+  //version = version
+  version = version[0] === '^' ?  version.split('^')[1] : version
+
+  const url = `https://${REGISTRY_API}/${name}/${version}`
   console.log(`[dependency-eval] URL: ${url}`)
   
   const data = await fetch(url)
   const parsedData = await data.json()
   //console.log(`[dependency-eval] Got dependencies for ${packageData.name}: ${packageData.version}`)
-  return parsedData.dependencies
+  //return parsed data deps if parsedData.deps is defined, otherwise return an empty object
+  return parsedData.dependencies ? parsedData.dependencies  : {};
+}
+
+async function recursiveRoutine(packageData, depth){
+  console.log(`[dependency-eval] package Name:  ${depth} --> ${packageData.name}@${packageData.version}`)
+  const dependencyList = await getDependencyList(packageData)
+  //console.log(Object.keys(dependencyList))
+    if (Object.keys(dependencyList).length === 0) {
+      return
+    }
+    for (dependency of Object.keys(dependencyList)) {
+      await recursiveRoutine({'name': dependency, 'version': dependencyList[dependency]}, depth+1)
+    }
+
 }
 
 async function getDependenciesOfDependencies(dependencies) {
@@ -48,4 +69,4 @@ function convertToTree() {
   console.log('[convertToTree] lol converting to tree')
 }
 
-module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, getDependenciesOfDependencies, convertToTree}
+module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, getDependenciesOfDependencies, recursiveRoutine, convertToTree}

@@ -4,7 +4,8 @@ const { option } = require('commander')
 const { getLatestPackageVersion,
     getDependencyList,
     fetchPackageInfo,
-    getDependenciesOfDependencies } = require('./dependency-eval')
+    getDependenciesOfDependencies,
+    recursiveRoutine } = require('./dependency-eval')
 const chalk = require('chalk')
 
 async function evalRunner(options) {
@@ -28,7 +29,9 @@ async function evalRunner(options) {
         console.log(`[evalRunner] packageVersion: ${packageVersion}`)
     }
     //console.log(`${chalk.green("[evalRunner]")} retrieved package Version:  ${packageVersion}`);
+    await recursiveRoutine({'name': packageName, 'version': packageVersion}, 1)
 
+    /*
     const requestedPackageInfo = await fetchPackageInfo(packageName, packageVersion);
     console.log(`[evalRunner] ${requestedPackageInfo.name}`)
     console.log(`[evalRunner] ${requestedPackageInfo.version}`)
@@ -47,13 +50,14 @@ async function evalRunner(options) {
             masterDependencyTree[depKey] = await getDependenciesOfDependencies(dependencies)
         }
         console.log(`[evalRunner] Dependencies for ${packageName}:${packageVersion}:`)
-        console.log(` ${JSON.stringify(masterDependencyTree[0], null, 2)}`)
+        console.log(` ${JSON.stringify(masterDependencyTree, null, 2)}`)
+        //console.log(`[evalRunner] Master Tree ${masterDependencyTree} `)
     } else {
         console.log(`[evalRunner] Dependencies for ${packageName}:${packageVersion}:`)
         console.log(` ${JSON.stringify(dependencies, null, 2)}`)
     }
     console.timeEnd("evalrunner")
-    return
+    return */
 }
 
 module.exports = { evalRunner }
