@@ -2,3 +2,4 @@ node_modules/*
 src/js-playground.js
 src/masterTree.json
 deps.json
+.eslintrc
