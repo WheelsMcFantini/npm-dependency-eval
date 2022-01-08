@@ -1,25 +1,23 @@
-//importing commander
-const { option } = require('commander')
-//importing the fucntions I exported with module.exports
-const { getLatestPackageVersion,
-    getDependencyList,
-    fetchPackageInfo,
-    getDependenciesOfDependencies,
-    recursiveRoutine } = require('./dependency-eval')
+const { getLatestPackageVersion, recursiveRoutine } = require('./dependency-eval')
 const chalk = require('chalk')
 
+/**
+ * Function which takes an option object which may contain the following:
+ * - packageName: name of the requested package to evaluate it's dependecy tree
+ * - packageVersion: the specific version of the requested package to evaulate 
+ * - depth: max depth to iterate to when evaulating the dependecy tree
+ * @param {Object} options 
+ */
 async function evalRunner(options) {
     console.time("evalrunner")
+
     const { packageName, depth } = options
     let { packageVersion } = options
 
-    console.log(`[evalRunner] package Name:  ${packageName}`)
-    //alternate if statement:
-    // if packageVersion exists, assign it;s value to itsself. 
-    // packageVersion = packageVersion ? packageVersion : await getLatestPackageVersion(packageName);
+    console.log(`[evalRunner] requested package to evaluted: ${packageName}@${packageVersion}`);
 
     //logic to ensure we can feed a package name and version to getDependencyList
-    if (packageVersion == undefined) {
+    if (packageVersion === undefined || packageVersion === 'latest') {
         console.log(`${chalk.red("[evalRunner]")} packageVersion was undefined`)
         console.log(`${chalk.red("[evalRunner]")} Retrieving latest package version`)
         packageVersion = await getLatestPackageVersion(packageName)
@@ -28,8 +26,8 @@ async function evalRunner(options) {
         console.log("[evalRunner] packageVersion was defined")
         console.log(`[evalRunner] packageVersion: ${packageVersion}`)
     }
-    //console.log(`${chalk.green("[evalRunner]")} retrieved package Version:  ${packageVersion}`);
-    await recursiveRoutine({'name': packageName, 'version': packageVersion}, 1)
+
+    const dependencyTree =  await recursiveRoutine(packageName, packageVersion, 1)
 
     /*
     const requestedPackageInfo = await fetchPackageInfo(packageName, packageVersion);
