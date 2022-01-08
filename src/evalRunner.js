@@ -14,6 +14,7 @@ async function evalRunner(options) {
     let { packageVersion } = options
 
     console.log(`[evalRunner] package Name:  ${packageName}`)
+    console.log(`[evalRunner] depth: ${depth}` )
     //alternate if statement:
     // if packageVersion exists, assign it;s value to itsself. 
     // packageVersion = packageVersion ? packageVersion : await getLatestPackageVersion(packageName);
@@ -29,8 +30,8 @@ async function evalRunner(options) {
         console.log(`[evalRunner] packageVersion: ${packageVersion}`)
     }
     //console.log(`${chalk.green("[evalRunner]")} retrieved package Version:  ${packageVersion}`);
-    await recursiveRoutine({'name': packageName, 'version': packageVersion}, 1)
-
+    const fuckery = await recursiveRoutine({'name': packageName, 'version': packageVersion}, 1, depth);
+    console.log(`${packageName}:` + JSON.stringify(fuckery, null, 2));
     /*
     const requestedPackageInfo = await fetchPackageInfo(packageName, packageVersion);
     console.log(`[evalRunner] ${requestedPackageInfo.name}`)

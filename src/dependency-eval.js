@@ -28,7 +28,8 @@ async function getDependencyList(packageData) {
   //then version = version.split('^')[1]
   //: else
   //version = version
-  version = version[0] === '^' ?  version.split('^')[1] : version
+  version = version[0] === '^' ?  version.split('^')[1] : version;
+  version = version[0] === '~' ?  version.split('~')[1] : version;
 
   const url = `https://${REGISTRY_API}/${name}/${version}`
   console.log(`[dependency-eval] URL: ${url}`)
@@ -37,20 +38,30 @@ async function getDependencyList(packageData) {
   const parsedData = await data.json()
   //console.log(`[dependency-eval] Got dependencies for ${packageData.name}: ${packageData.version}`)
   //return parsed data deps if parsedData.deps is defined, otherwise return an empty object
+  if (!parsedData.dependencies) console.log(`on no, no data ${packageData.name}`);
   return parsedData.dependencies ? parsedData.dependencies  : {};
 }
 
-async function recursiveRoutine(packageData, depth){
+async function recursiveRoutine(packageData, depth, depthLimit){
+  
+  const myDeps = {};
+
   console.log(`[dependency-eval] package Name:  ${depth} --> ${packageData.name}@${packageData.version}`)
   const dependencyList = await getDependencyList(packageData)
   //console.log(Object.keys(dependencyList))
-    if (Object.keys(dependencyList).length === 0) {
-      return
-    }
-    for (dependency of Object.keys(dependencyList)) {
-      await recursiveRoutine({'name': dependency, 'version': dependencyList[dependency]}, depth+1)
-    }
+  // console.log(`${packageData.name} ${depth} ${depthLimit} --> ${depth === depthLimit}`);
+  if ((Object.keys(dependencyList).length === 0) || depth == depthLimit) {
+    myDeps [`${packageData.name}@${packageData.version}`] = depth == depthLimit ?  "depth limit reached"  : {};
+    return myDeps;
+  }
+  for (dependency of Object.keys(dependencyList)) {
+    myDeps[`${dependency}@${dependencyList[dependency]}`] = await recursiveRoutine({'name': dependency, 'version': dependencyList[dependency]}, depth+1, depthLimit)
 
+  }
+  // console.log(packageData.name);
+  // console.log(myDeps);
+
+  return myDeps;
 }
 
 async function getDependenciesOfDependencies(dependencies) {
