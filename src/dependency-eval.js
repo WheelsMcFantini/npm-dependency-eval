@@ -17,11 +17,12 @@ async function getLatestPackageVersion(packageName) {
 
 
 function stripSemvarAnnotations(packageVersion) {
-  let cleanVersionNumber;
-  cleanVersionNumber = packageVersion[0] === '^' ?  packageVersion.split('^')[1] : packageVersion;
-  cleanVersionNumber = packageVersion[0] === '~' ?  packageVersion.split('~')[1] : packageVersion;
+  const firstChar = packageVersion[0];
+
+  if (firstChar === '^') return packageVersion.split('^')[1];
+  if (firstChar === '~') return packageVersion.split('~')[1];
   
-  return cleanVersionNumber;
+  return packageVersion;
 }
 
 async function getDependencyList(packageName, packageVersion) {
@@ -65,7 +66,6 @@ async function recursiveRoutine(packageName, packageVersion, depth, depthLimit){
   // package has no dependecies
   if (packageDependeciesListByName.length === 0) {
     console.log(`[recursiveRoutine] ${packageName}@${packageVersion} has no deps.`)
-    dependeciesTree[`${packageName}@${packageVersion}`] = {};
     return dependeciesTree;
   }
 
