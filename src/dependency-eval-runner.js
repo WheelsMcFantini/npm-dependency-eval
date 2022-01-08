@@ -28,7 +28,7 @@ async function evalRunner(options) {
     }
 
     const dependencyTree =  await recursiveRoutine(packageName, packageVersion, 1)
-
+    console.log(JSON.stringify(dependencyTree, null , 2));
     /*
     const requestedPackageInfo = await fetchPackageInfo(packageName, packageVersion);
     console.log(`[evalRunner] ${requestedPackageInfo.name}`)
