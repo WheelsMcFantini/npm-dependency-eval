@@ -49,31 +49,37 @@ async function getDependencyList(packageName, packageVersion) {
  * 
  * @param {*} packageName 
  * @param {*} packageVersion 
- * @param {*} depth 
+ * @param {*} depth numerical value or 'max'
  * @returns 
  */
-async function recursiveRoutine(packageName, packageVersion, depth){
+async function recursiveRoutine(packageName, packageVersion, depth, depthLimit){
+  const dependeciesTree = {};
+
   console.log(`[recursiveRoutine] ${depth} --> ${packageName}@${packageVersion}`);
   const packageDependecies = await getDependencyList(packageName, packageVersion);
   const packageDependeciesListByName = Object.keys(packageDependecies);
-  if (packageDependeciesListByName.length === 0) return;
   
-  for (dependency of packageDependeciesListByName) {
-    await recursiveRoutine(dependency, packageDependecies[dependency], depth+1);
+  // package has no dependecies
+  if (packageDependeciesListByName.length === 0) {
+    console.log(`[recursiveRoutine] ${packageName}@${packageVersion} has no deps.`)
+    dependeciesTree[`${packageName}@${packageVersion}`] = {};
+    return dependeciesTree;
   }
-}
 
-// async function getDependenciesOfDependencies(dependencies) {
-//   depsOfDeps = {}
-//     for (const dependency in dependencies) {
-//         console.log(`[dependency-eval] grabbing dependencies for ${dependency}:${dependencies[dependency]}`)
-//         depKey = `${dependency}:${dependencies[dependency]}`
-//         const name = dependency
-//         const version = dependencies[dependency]
-//         depsOfDeps[depKey] = await getDependencyList({ name, version})
-//       }
-//   return depsOfDeps
-// }
+  // specified depthLimit has been reached
+  if (depthLimit !== 'max' && depth === depthLimit) {
+    console.log(`[recusriveRoutine] max depth has been reached`);
+    dependeciesTree[`${packageName}@${packageVersion}`] = 'depth limit reached';
+    return dependeciesTree;    
+  }
+    
+  for (dependency of packageDependeciesListByName) {
+    const dependencyVersion = packageDependecies[dependency];
+    dependeciesTree[`${dependency}@${dependencyVersion}`] = await recursiveRoutine(dependency, dependencyVersion, depth+1, depthLimit);
+  }
+
+  return dependeciesTree;
+}
 
 
 module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, recursiveRoutine};
