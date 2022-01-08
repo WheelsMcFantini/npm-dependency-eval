@@ -17,8 +17,9 @@ async function getLatestPackageVersion(packageName) {
 
 
 function stripSemvarAnnotations(packageVersion) {
-  const cleanVersionNumber = packageVersion[0] === '^' ?  packageVersion.split('^')[1] : packageVersion;
-  const cleanVersionNumber = packageVersion[0] === '~' ?  packageVersion.split('~')[1] : packageVersion;
+  let cleanVersionNumber;
+  cleanVersionNumber = packageVersion[0] === '^' ?  packageVersion.split('^')[1] : packageVersion;
+  cleanVersionNumber = packageVersion[0] === '~' ?  packageVersion.split('~')[1] : packageVersion;
   
   return cleanVersionNumber;
 }
