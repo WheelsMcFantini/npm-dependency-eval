@@ -1,8 +1,6 @@
-const { version } = require('commander')
-const https = require('https')
 const fetch = require('node-fetch')
-const VERSION = ""
-const REGISTRY_API = "registry.npmjs.org"
+
+const REGISTRY_API = "registry.npmjs.org" // Default registry to fetch packages from
 
 async function fetchPackageInfo(packageName, packageVersion) {
   const url = `https://${REGISTRY_API}/${packageName}/${packageVersion}`
@@ -18,66 +16,72 @@ async function getLatestPackageVersion(packageName) {
 }
 
 
-async function getDependencyList(packageData) {
-  let { name, version } = packageData
-  //console.log(`[dependency-eval] package Name:  ${packageData.name}`)
-  //console.log(`[dependency-eval] package Version:  ${packageData.version}`)
-
-  //if the first character of version is '^' 
-  //?
-  //then version = version.split('^')[1]
-  //: else
-  //version = version
-  version = version[0] === '^' ?  version.split('^')[1] : version;
-  version = version[0] === '~' ?  version.split('~')[1] : version;
-
-  const url = `https://${REGISTRY_API}/${name}/${version}`
-  console.log(`[dependency-eval] URL: ${url}`)
+function stripSemvarAnnotations(packageVersion) {
+  const cleanVersionNumber = packageVersion[0] === '^' ?  packageVersion.split('^')[1] : packageVersion;
+  const cleanVersionNumber = packageVersion[0] === '~' ?  packageVersion.split('~')[1] : packageVersion;
   
-  const data = await fetch(url)
-  const parsedData = await data.json()
-  //console.log(`[dependency-eval] Got dependencies for ${packageData.name}: ${packageData.version}`)
-  //return parsed data deps if parsedData.deps is defined, otherwise return an empty object
-  if (!parsedData.dependencies) console.log(`on no, no data ${packageData.name}`);
-  return parsedData.dependencies ? parsedData.dependencies  : {};
+  return cleanVersionNumber;
 }
 
-async function recursiveRoutine(packageData, depth, depthLimit){
+async function getDependencyList(packageName, packageVersion) {
+  console.log(`[getDependencyList] get dependecy list for: ${packageName}@${packageVersion}`);
+  const cleanedPackageVersion = stripSemvarAnnotations(packageVersion);
+  const url = `https://${REGISTRY_API}/${packageName}/${cleanedPackageVersion}`
+  console.log(`[getDependencyList] attempting to fetch URL: ${url}`)
+
+  let packageDependecies;
+  try {
+    const packageData = await fetch(url);
+    const parsedPackageData = await packageData.json();
+    // console.log(parsedPackageData);
+    packageDependecies = parsedPackageData.dependencies || {};
+    console.log(packageDependecies);
+  } catch (error) {
+    console.log(`[getDependencyList] Failed to fetch package data for ${packageName}@${cleanedPackageVersion}, aborting.`);
+    console.log(error);
+    throw new Error(`Failed to fetch package data for ${packageName}@${cleanedPackageVersion} from ${url}.`)
+  }
+
+  const dependeciesCount = Object.keys(packageDependecies).length;
+  console.log(`[getDependencyList] ${packageName}@${cleanedPackageVersion} has ${dependeciesCount} dependecies.`);
+  return packageDependecies;
+}
+
+/**
+ * 
+ * @param {*} packageName 
+ * @param {*} packageVersion 
+ * @param {*} depth numerical value or 'max'
+ * @returns 
+ */
+async function recursiveRoutine(packageName, packageVersion, depth, depthLimit){
+  const dependeciesTree = {};
+
+  console.log(`[recursiveRoutine] ${depth} --> ${packageName}@${packageVersion}`);
+  const packageDependecies = await getDependencyList(packageName, packageVersion);
+  const packageDependeciesListByName = Object.keys(packageDependecies);
   
-  const myDeps = {};
-
-  console.log(`[dependency-eval] package Name:  ${depth} --> ${packageData.name}@${packageData.version}`)
-  const dependencyList = await getDependencyList(packageData)
-  //console.log(Object.keys(dependencyList))
-  // console.log(`${packageData.name} ${depth} ${depthLimit} --> ${depth === depthLimit}`);
-  if ((Object.keys(dependencyList).length === 0) || depth == depthLimit) {
-    myDeps [`${packageData.name}@${packageData.version}`] = depth == depthLimit ?  "depth limit reached"  : {};
-    return myDeps;
+  // package has no dependecies
+  if (packageDependeciesListByName.length === 0) {
+    console.log(`[recursiveRoutine] ${packageName}@${packageVersion} has no deps.`)
+    dependeciesTree[`${packageName}@${packageVersion}`] = {};
+    return dependeciesTree;
   }
-  for (dependency of Object.keys(dependencyList)) {
-    myDeps[`${dependency}@${dependencyList[dependency]}`] = await recursiveRoutine({'name': dependency, 'version': dependencyList[dependency]}, depth+1, depthLimit)
 
+  // specified depthLimit has been reached
+  if (depthLimit !== 'max' && depth === depthLimit) {
+    console.log(`[recusriveRoutine] max depth has been reached`);
+    dependeciesTree[`${packageName}@${packageVersion}`] = 'depth limit reached';
+    return dependeciesTree;    
   }
-  // console.log(packageData.name);
-  // console.log(myDeps);
+    
+  for (dependency of packageDependeciesListByName) {
+    const dependencyVersion = packageDependecies[dependency];
+    dependeciesTree[`${dependency}@${dependencyVersion}`] = await recursiveRoutine(dependency, dependencyVersion, depth+1, depthLimit);
+  }
 
-  return myDeps;
+  return dependeciesTree;
 }
 
-async function getDependenciesOfDependencies(dependencies) {
-  depsOfDeps = {}
-    for (const dependency in dependencies) {
-        console.log(`[dependency-eval] grabbing dependencies for ${dependency}:${dependencies[dependency]}`)
-        depKey = `${dependency}:${dependencies[dependency]}`
-        const name = dependency
-        const version = dependencies[dependency]
-        depsOfDeps[depKey] = await getDependencyList({ name, version})
-      }
-  return depsOfDeps
-}
 
-function convertToTree() {
-  console.log('[convertToTree] lol converting to tree')
-}
-
-module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, getDependenciesOfDependencies, recursiveRoutine, convertToTree}
+module.exports = { getLatestPackageVersion, fetchPackageInfo, getDependencyList, recursiveRoutine};
