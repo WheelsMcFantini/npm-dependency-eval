@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 //Creates a js object, and uses "destructuring assignment" to pull a value out of the output of commander
 //and pack it into the created object
 const { program, version } = require('commander');
