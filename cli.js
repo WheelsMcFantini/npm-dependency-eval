@@ -11,6 +11,7 @@ program
     .requiredOption('-p, --packageName <name>', 'Package name to evaulate the dependencies of.')
     .option('-d, --depth <max_depth_level>', 'Depth of the dependency tree to iterate on.')
     .option('-v, --packageVersion [version]',  'Package version', 'latest')
+    .option('-o, --output [output-file-name]',  'Path to where to create the output file, defaults to `packageName-packageVersion.json`')
     .option('--verbose', 'Enables verbose output.')
     .on('--help', function(){
         console.log("")
