@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const { program } = require('commander');
 const { evalRunner }  = require('./src/dependency-eval-runner');
 program.version('0.1.0');
