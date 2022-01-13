@@ -1,6 +1,6 @@
 {
   "name": "npm-dependency-eval",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI tool to help you see what dependencies a given package requires",
   "bin": {
     "eval-deps": "./cli.js"
@@ -10,7 +10,10 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "author": "Wheels McFantini",
-  "contributors": [ "Wheels McFantini", "mendeleden" ],
+  "contributors": [
+    "Wheels McFantini",
+    "mendeleden"
+  ],
   "license": "ISC",
   "dependencies": {
     "chalk": "3.0.0",
