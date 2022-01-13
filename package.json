@@ -7,9 +7,10 @@
   },
   "main": "cli.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No test specified\" && exit 0"
   },
   "author": "Wheels McFantini",
+  "contributors": [ "Wheels McFantini", "mendeleden" ],
   "license": "ISC",
   "dependencies": {
     "chalk": "3.0.0",
